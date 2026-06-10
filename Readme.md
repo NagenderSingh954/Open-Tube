@@ -11,4 +11,10 @@
 if you look at the 2nd commit we have establish the connecton with the DB
 
 # thing to remember 
-  1) if we use the Asyng fn it always return the promice which will be handle when fn call
+  1) if we use the Asyng fn it always return the promice which should be handle when fn call
+# NodeJs package Explained
+   1) mongoose-aggregate-paginate are help to perform the aggregation query(CRUD operation) reason we not use the default because it help in many complex queryies it also help on how many result should be showen when the page load like in on page 10 result in 2nd 10 result and so on help to paginate the queries it inject like the plugin 
+
+   2) bcrypt package are use to encrypt the password before saving password in DB it is important to save the password in encrypted form 
+   
+   3) JWt(jsonwebtoken) are use to generate the token so that the user can access the service with this token and noyt sent thire info again and again in simple if user require the service they ask for t=it with this token to varify themselve    it is bearer Token mean whoever have this token data will be send to them 
