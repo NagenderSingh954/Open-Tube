@@ -11,13 +11,26 @@ const app=express()
  }))                    
 
 app.use(express.json({limit:'16kb'}))
-
 // app.use(express.urlencoded)   it is sufficient 
 app.use(express.urlencoded({extended:true,limit:'16kb'}))   //extented mean we can give more obj 
 app.use(express.static('public'))       //public is our foldee
-app.use(cookieParser())                 //use to read ans set the cookies of the browser
+app.use(cookieParser())                 //use to read and set the cookies of the browser
 
 
+
+
+//routess
+
+import userRouter from './routes/user.router.js'
+
+//route declaration 
+
+app.use('/api/v1/users',userRouter)
+// app.get('/',(req,res)=>{
+//    res.json({                 //for the [ersonal testing 
+//       'message':'success'
+//    })
+// })
 
 
 export {app};
