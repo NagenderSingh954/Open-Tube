@@ -18,3 +18,6 @@ if you look at the 2nd commit we have establish the connecton with the DB
    2) bcrypt package are use to encrypt the password before saving password in DB it is important to save the password in encrypted form 
    
    3) JWt(jsonwebtoken) are use to generate the token so that the user can access the service with this token and noyt sent thire info again and again in simple if user require the service they ask for t=it with this token to varify themselve    it is bearer Token mean whoever have this token data will be send to them 
+
+   4) Multer are used to upload teh file wheter on the local or on the db our cloud services
+      there are also number of alternative(express-fileupload,busboy,formidable) available but multer work best so it is more used  

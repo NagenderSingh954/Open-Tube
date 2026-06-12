@@ -2,9 +2,11 @@ const asyncHandler=(requestHandler)=>{
     (req,res,next)=>{
         Promise.resolve(requestHandler(req,res,next)).catch((err)=>next(err))
     }
-}  // below code is same with try catch 
+}   
 
 export {asyncHandler}
+
+// above code is same with Promice
 
 
 // const asyncHandler=()=>{}
