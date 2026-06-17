@@ -6,7 +6,7 @@ import { User } from "../models/user.model.js";
 export const varifyJWt=asyncHandler(async (req,_,next)=>{     //this blanc space represent the res but res is not use that why we write _ we can also write res in this place
    try {
      const token=req.cookies?.accessToken || req.header('Authorization')?.replace("Bearer ","")
-     console.log(token)
+   
  
      if(!token){
          throw new ApiError(400,"Unauthorized Request")
