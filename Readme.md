@@ -21,3 +21,8 @@ if you look at the 2nd commit we have establish the connecton with the DB
 
    4) Multer are used to upload teh file wheter on the local or on the db our cloud services
       there are also number of alternative(express-fileupload,busboy,formidable) available but multer work best so it is more used  
+
+# Access and refresh Tokens 
+   Access Tokens are for the short period of time and refresh is long lived these tokenare use to use for authorization \
+   if we have the Ac Token we can use the feature that rrequire the authorization but these AC token should expire shorly 
+   User Are initially valided using these Access token but since it expire then the refresh token that are saved  in DB and user also has this so when the AcT expire client send the refresh token for continution of teh login and new Act are generated imidiatly

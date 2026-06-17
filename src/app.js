@@ -21,7 +21,7 @@ app.use(cookieParser())                 //use to read and set the cookies of the
 
 //routess
 
-import userRouter from './routes/user.router.js'
+import userRouter from './routes/user.routes.js'
 
 //route declaration 
 
