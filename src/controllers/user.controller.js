@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary,deleteOnCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiErrro.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from 'jsonwebtoken'
@@ -280,6 +280,14 @@ const updateUserAvatar=asyncHandler(async (req,res)=>{
     throw new ApiError(400, "Error in Uploading On Cloud While Updating the Avatar")
   }
 
+  const userOldDetails=await User.findById(
+    req.user?._id,
+  ).select("avatar")
+
+  const oldAvatarUrl=userOldDetails.avatar
+
+
+
   const user=await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -289,6 +297,12 @@ const updateUserAvatar=asyncHandler(async (req,res)=>{
     },
     {new:true} 
   ).select("-password")
+
+  const deletedSource =await deleteOnCloudinary(oldAvatarUrl)
+
+  if(deletedSource.result!== "ok" ){
+      console.log("Error in Deleting the The Old Avatar image")
+  }
 
   return res.status(200).json(
     new ApiResponse(200,user,"Avatar Updated SuccessFully")
@@ -308,6 +322,12 @@ const updateUserCoverImage=asyncHandler(async (req,res)=>{
     throw new ApiError(400, "Error in Uploading On Cloud While Updating the Cover Iamge ")
   }
 
+  const userOldDetails=await User.findById(
+    req.user?._id,
+  ).select("coverImage")
+
+  const oldCoverImageUrl=userOldDetails.coverImage
+
   const user=await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -318,9 +338,85 @@ const updateUserCoverImage=asyncHandler(async (req,res)=>{
     {new:true} 
   ).select("-password")
 
+  const deletedSource =await deleteOnCloudinary(oldCoverImageUrl)
+
+  if(deletedSource.result!== "ok" ){
+      console.log("Error in Deleting the The Old Cover image")
+  }
+
   return res.status(200).json(
     new ApiResponse(200,user,"Cover Image  Updated SuccessFully")
   )
+})
+
+const getUserProfile=asyncHandler(async(req,res)=>{
+  const {username,email} = req.params
+  if(!username.trim()){
+    throw new ApiError(400,"Username is missing or not existed")
+  }
+
+ const channel= await User.aggregate([
+    {
+      $match:{
+        username:username?.toLowerCase()      //match all the subscriber where usernamee match
+      }
+    },
+    {
+      $lookup: {
+      from: "subscriptions",      //look into the subscribers and add this to subscribers
+      localField: "_id",
+      foreignField: "channel",
+      as: "subscribers"
+    }
+    },
+    {
+      $lookup: {
+      from: "subscriptions",      //look into the subscribers and add this to subscribersTo
+      localField: "_id",
+      foreignField: "subscriber",
+      as: "subscribedTo"
+    }
+    },
+    {
+      $addFields:{
+        subscribersCount:{        //Add new field in teh user name subscribersCount
+          $size:"$subscribers"        
+        },
+        channelsSubscribedToCount:{       //Add new field in teh user name channelsSubscribedToCount
+          $size:"$subscribedTo"
+        },
+        isSubscribed:{          //give the front whether the seubscribe to the chennel tehy are looking 
+          $con:{
+            if:{$in: [req.user?._id,"$subscribers.subscriber"]},
+            then:true,
+            else:false,
+          }
+        }
+      }
+    },
+    {
+      $project:{
+        fullName:1,
+        username:1,
+        subscribersCount:1,
+        channelsSubscribedToCount:1,
+        isSubscribed:1,
+        avatar:1,
+        coverImage:1,
+        email:1,
+      }
+    }
+  ])
+
+  if(!channel?.length){
+    throw new ApiError(404,"chennel does not Exists")
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,channel[0],"User Channel Fetched Successfully")
+  )
+
+  console.log(channel)
 })
 
 export { registerUser,

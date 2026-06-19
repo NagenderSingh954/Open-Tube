@@ -26,3 +26,7 @@ if you look at the 2nd commit we have establish the connecton with the DB
    Access Tokens are for the short period of time and refresh is long lived these tokens are use to use for authorization \
    if we have the Ac Token we can use the feature that rrequire the authorization but these AC token should expire shorly 
    User Are initially valided using these Access token but since it expire then the refresh token that are saved  in DB and user also has this so when the AcT expire client send the refresh token for continution of teh login and new Act are generated imidiatly
+
+
+# Aggregation Pipeline
+      Ap is the Stages Each stage perform the operation on the provided doc mean if the doc is 50 and we want the 25 so we can filter it and show only 25 document info to the user as the field 
