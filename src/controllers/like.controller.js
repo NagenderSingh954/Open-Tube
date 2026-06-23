@@ -1,14 +1,14 @@
 import mongoose, {isValidObjectId} from "mongoose"
 import {Like} from "../models/likes.model.js"
-import {ApiError} from "../utils/ApiError.js"
+import {ApiError} from "../utils/ApiErrro.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
     const {videoId} = req.params
     const like=await Like.find({video:new mongoose.Types.ObjectId(videoId)})
-
-    if(!like){
+    
+    if(like.length==[]){
        const newLikke= await Like.create({
             video:videoId,
             likedBy:req.user?._id
@@ -43,7 +43,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 
       const like=await Like.find({comment:new mongoose.Types.ObjectId(commentId)})
 
-    if(!like){
+    if(like.length==[]){
        const newLikke= await Like.create({
             comment:commentId,
              likedBy:req.user?._id
@@ -110,7 +110,8 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     const allLiked=await Like.aggregate([
         {
             $match:{
-                likedBy:new mongoose.Types.ObjectId(req.user._id)
+                likedBy:new mongoose.Types.ObjectId(req.user._id),
+                video: { $exists: true }
             }
         },
         {
@@ -140,7 +141,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                 {
                     $addFields:{
                        owner:{
-                        $first:"owner"
+                        $first:"$owner"
                        }
                     }
                 }
@@ -152,6 +153,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     if(!allLiked?.length){
     throw new ApiError(404,"No Liked Video Exist")
   }
+
 
   const videos = allLiked.map(item => item.likedVideo[0]);
 

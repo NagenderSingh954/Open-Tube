@@ -1,12 +1,12 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import { Video } from "../models/video.model.js"
 import { User } from "../models/user.model.js"
-import { ApiError } from "../utils/ApiError.js"
+import { ApiError } from "../utils/ApiErrro.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js"
 import { Like } from "../models/likes.model.js"
-import { Comment } from "../models/comments.js"
+import { Comment } from "../models/comment.model.js"
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy = "createdAt", sortType = "desc", userId } = req.query
@@ -24,8 +24,8 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
     if (query) {
         match.$or = [
-            { title: { $regex: query, Option: 'i' } },
-            { description: { $regex: query, Option: 'i' } },
+            { title: { $regex: query, $options: 'i' } },
+            { description: { $regex: query, $options: 'i' } },
         ]
     }
 
@@ -53,11 +53,13 @@ const getAllVideos = asyncHandler(async (req, res) => {
                     }
                 ]
             },
-            $addFields:{
+           
+        },
+        { $addFields:{
                 owner:{
-                    $first:"owner"
+                    $first:"$owner"
                 }
-            },
+            }
         },
         {
             $sort:sortOptions
@@ -103,7 +105,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All field Are Required ")
     }
     const thumbnailLocalPath = req.files?.thumbnail[0]?.path
-    const videoLocalPath = req.files?.video[0]?.path
+    const videoLocalPath = req.files?.videoFile[0]?.path
     if (!thumbnailLocalPath) {
         throw new ApiError(400, "Thubnail is required")
     }
@@ -186,9 +188,20 @@ const getVideoById = asyncHandler(async (req, res) => {
                         }
                     },
                     {
+                        $lookup:{
+                            from:"likes",
+                            localField:"_id",
+                            foreignField:"comment",
+                            as:"commentLikes"
+                        }
+                    },
+                    {
                         $addFields: {
                             owner: {
                                 $first: "$owner"
+                            },
+                            commentLike:{
+                                $size:"$commentLikes"
                             }
                         }
                     },
@@ -197,7 +210,8 @@ const getVideoById = asyncHandler(async (req, res) => {
                             content: 1,
                             createdAt: 1,
                             "owner.username": 1,
-                            "owner.avatar": 1
+                            "owner.avatar": 1,
+                            commentLike:1
                         }
                     }
                 ]
@@ -234,7 +248,7 @@ const getVideoById = asyncHandler(async (req, res) => {
         new ApiResponse(200, video, "Video Fetched Successfully")
     )
 
-})
+})          //this controller do teh task of the getcommentt and getvideolike also which is define in like and comment controllers 
 
 const updateVideoDetail = asyncHandler(async (req, res) => {
     const { videoId } = req.params
@@ -261,7 +275,7 @@ const updateVideoDetail = asyncHandler(async (req, res) => {
         new ApiResponse(200, "Video Details updated Successfully")
     )
 
-})
+})          //Todo thsi route are remin to be handle 
 
 const updateVideoThumbnail = asyncHandler(async (req, res) => {
     const { videoId } = req.params
@@ -304,7 +318,7 @@ const updateVideoThumbnail = asyncHandler(async (req, res) => {
     )
 
 
-})
+})      
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
@@ -364,7 +378,8 @@ export {
     getAllVideos,
     publishAVideo,
     getVideoById,
-    updateVideo,
+   updateVideoThumbnail,
+   updateVideoDetail,
     deleteVideo,
     togglePublishStatus
 }

@@ -22,15 +22,25 @@ app.use(cookieParser())                 //use to read and set the cookies of the
 //routess
 
 import userRouter from './routes/user.routes.js'
+import videoRouter from './routes/video.routes.js'
+import commentsRouter from './routes/comment.routes.js'
+import likeRouter from './routes/like.routes.js'
 
 //route declaration 
 
 app.use('/api/v1/users',userRouter)
-// app.get('/',(req,res)=>{
-//    res.json({                 //for the [ersonal testing 
-//       'message':'success'
-//    })
-// })
+app.use('/api/v1/videos',videoRouter)
+app.use('/api/v1/comments',commentsRouter)
+app.use('/api/v1/likes',likeRouter)
 
+
+
+app.use((err, req, res, next) => {
+    res.status(err.statusCode || 500).json({
+        success: err.success || false,
+        message: err.message || "Internal Server Error",
+        errors: err.errors || []
+    });
+});
 
 export {app};

@@ -1,0 +1,41 @@
+import { Router } from "express";
+import { upload } from "../middlewares/multer.middleware.js";
+import { varifyJWt } from "../middlewares/auth.middleware.js";
+import {
+    deleteVideo,
+    getAllVideos,
+    getVideoById,
+    publishAVideo,
+    updateVideoThumbnail
+} from "../controllers/video.controller.js";
+
+
+const router = Router()
+
+router.use(varifyJWt)           //Apply this middle ware to al the routes in this routes
+
+router
+    .route('/')
+    .get(getAllVideos)
+    .post(
+        upload.fields([
+            {
+                name: "videoFile",
+                maxCount: 1
+            },
+            {
+                name: "thumbnail",
+                maxCount: 1
+
+            }
+        ]),
+        publishAVideo
+    );
+
+router
+    .route("/:videoId")
+    .get(getVideoById)
+    .patch(upload.single("thubmnail"), updateVideoThumbnail)  //Todo: Updating the video detail pending 
+    .delete(deleteVideo)
+
+export default router

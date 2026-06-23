@@ -1,6 +1,6 @@
-import mongoose from "mongoose"
+import mongoose,{isValidObjectId} from "mongoose"
 import { Comment } from "../models/comment.model.js"
-import { ApiError } from "../utils/ApiError.js"
+import { ApiError } from "../utils/ApiErrro.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
@@ -14,6 +14,9 @@ const getVideoComments = asyncHandler(async (req, res) => {
     const totalComments = await Comment.countDocuments({
         video: videoId
     })
+    if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
 
     const comments = await Comment.aggregate([
         {
@@ -45,7 +48,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
             limit: limitNum,
             totalComments,
             totalPages: Math.ceil(totalComments / limitNum)
-        })
+        },"Video Comment fetched Successfully")
     )
 
 })
