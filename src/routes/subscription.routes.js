@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { varifyJWt } from "../middlewares/auth.middleware";
-import { getSubscribedChannels, getUserChannelSubscribers, toggleSubscription } from "../controllers/subscription.controller";
+import { varifyJWt } from "../middlewares/auth.middleware.js";
+import { getSubscribedChannels, getUserChannelSubscribers, toggleSubscription } from "../controllers/subscription.controller.js";
 
 const router=Router()
 router.use(varifyJWt)

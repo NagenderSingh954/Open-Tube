@@ -116,10 +116,10 @@ const getPlaylistById = asyncHandler(async (req, res) => {
       }
     ])
 
-    return res.status(200),json(
+    return res.status(200).json(
       new ApiResponse(
         200,
-        playlist,
+        playlist[0],
         "Playlist fetched successFully With Id"
       )
     )
@@ -131,13 +131,13 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const {playlistId, videoId} = req.params
 
     if(!(isValidObjectId(playlistId) || isValidObjectId(videoId))){
-      new ApiError(400,"Invalid Id's")
+      throw new ApiError(400,"Invalid Id's")
     }
     const playlist=await Playlist.findById(playlistId);
     const video=await Video.findById(videoId);
 
-   const newpalylist =await playlist.video.push(video._id)
-  await newpalylist.save()
+     playlist.videos.push(video._id)
+    const newpalylist =await playlist.save()
 
     return res.status(200).json(
       new ApiResponse(
@@ -165,20 +165,20 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Video not found");
     }
 
-     if (!playlist.video.some(id => id.toString() === videoId)) {
+     if (!playlist.videos.some(id => id.toString() === videoId)) {
         throw new ApiError(400, "Video is not present in the playlist");
     }
 
     const updatedplaylist=await Playlist.findByIdAndUpdate(
     playlistId,
-    { $pull: { video: videoId } },
-    { new: true }
+    { $pull: { videos: videoId } },
+   { returnDocument: "after" }
 );
 
     return res.status(200).json(
-      200,
-      updatePlaylist,
-      "Video Has Been Remove from the playlist "
+      new ApiResponse(200,
+     updatedplaylist,
+      "Video Has Been Remove from the playlist ")
     )
 
 })
