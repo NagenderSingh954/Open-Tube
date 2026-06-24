@@ -118,7 +118,7 @@ const deleteComment = asyncHandler(async (req, res) => {
     }
 
     if (req.user._id.toString() !== comment.owner.toString()) {
-        throw new ApiError(402, "UnAuthorisez access Only Owner can Delete the comment The Comment ")
+        throw new ApiError(402, "UnAuthorisez access Only Owner can Delete the comment")
     }
 
     await Comment.findByIdAndDelete(commentId)

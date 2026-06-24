@@ -6,7 +6,10 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
     const {videoId} = req.params
-    const like=await Like.find({video:new mongoose.Types.ObjectId(videoId)})
+    const like=await Like.find({
+        video:new mongoose.Types.ObjectId(videoId),
+        likedBy:new mongoose.Types.ObjectId(req.user._id)    
+    })
     
     if(like.length==[]){
        const newLikke= await Like.create({
@@ -41,7 +44,10 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     const {commentId} = req.params
     //TODO: toggle like on comment
 
-      const like=await Like.find({comment:new mongoose.Types.ObjectId(commentId)})
+      const like=await Like.findOne({
+        comment:new mongoose.Types.ObjectId(commentId),
+        likedBy:new mongoose.Types.ObjectId(req.user._id)
+    })
 
     if(like.length==[]){
        const newLikke= await Like.create({
@@ -75,7 +81,10 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     const {tweetId} = req.params
     //TODO: toggle like on tweet
 
-      const like=await Like.find({tweet:new mongoose.Types.ObjectId(tweetId)})
+      const like=await Like.find({
+        tweet:new mongoose.Types.ObjectId(tweetId),
+        likedBy:new mongoose.Types.ObjectId(req.user._id)
+    })
 
     if(!like){
        const newLikke= await Like.create({
