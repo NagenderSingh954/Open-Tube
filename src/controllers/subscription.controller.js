@@ -10,7 +10,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     const { channelId } = req.params
     // TODO: toggle subscription
 
-    if(isValidObjectId(channelId)){
+    if(!isValidObjectId(channelId)){
         throw new ApiError(400,"Invalid Chennel")
     }
 
@@ -21,9 +21,10 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     const subto = await Subscription.findOne({ 
         subscriber:new mongoose.Types.ObjectId(req.user._id),
         channel: new mongoose.Types.ObjectId(channelId) })
+        
 
-    if (subto.length == []) {
-        const subscribeTo = Subscription.create({
+    if (!subto) {
+        const subscribeTo =await Subscription.create({
             subscriber: req.user._id,
             channel: channelId
         })
@@ -32,7 +33,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
         )
     }
 
-    const deletesSub = Subscription.deleteOne({ subscriber:new mongoose.Types.ObjectId(req.user._id),
+    const deletesSub = await Subscription.deleteOne({ subscriber:new mongoose.Types.ObjectId(req.user._id),
         channel: new mongoose.Types.ObjectId(channelId) })
     if (!deletesSub) {
         throw new ApiError(400, "there is Error While Deleting the Subscriber ")
@@ -77,7 +78,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         },
         {
             $addFields: {
-                $first: "$subscribers"
+               subscribers: {$first: "$subscribers"}
             }
         },
         {
@@ -129,7 +130,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                     {
                         $project:{
                             fullName:1,
-                            username:avatar,
+                            username:1,
                             avatar:1
                         }
                     }
@@ -139,7 +140,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
         },
         {
             $addFields:{
-                $first:"chennels"
+               chennels:{ $first:"$chennels"}
             }
         },
         {

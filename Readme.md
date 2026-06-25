@@ -30,3 +30,6 @@ if you look at the 2nd commit we have establish the connecton with the DB
 
 # Aggregation Pipeline
       Ap is the Stages Each stage perform the operation on the provided doc mean if the doc is 50 and we want the 25 so we can filter it and show only 25 document info to the user as the field 
+
+
+      TOdo get all the twits and view calculation 

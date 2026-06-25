@@ -134,6 +134,14 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
+
+   const videoview = await Video.findById(videoId);
+
+if (!videoview.owner.equals(req.user._id)) {
+    await Video.findByIdAndUpdate(videoId, {
+        $inc: { views: 1 }
+    });
+}
     const video = await Video.aggregate([
         {
             $match: {
@@ -267,12 +275,12 @@ const updateVideoDetail = asyncHandler(async (req, res) => {
             }
         },
         {
-            new: true
+            returnDocument: 'after'
         }
     )
 
     return res.status(200).json(
-        new ApiResponse(200, "Video Details updated Successfully")
+        new ApiResponse(200, video,"Video Details updated Successfully")
     )
 
 })          //Todo thsi route are remin to be handle 

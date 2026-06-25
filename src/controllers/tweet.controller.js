@@ -166,11 +166,52 @@ const deleteTweet = asyncHandler(async (req, res) => {
     )
 })
 
+const getAlltweets=asyncHandler(async (req, res)=>{
+    const tweets=await Tweet.aggregate([
+        {
+            $match:{}
+        },
+        {
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"owner",
+                pipeline:[
+                    {
+                        $project:{
+                            fullName:1,
+                            username:1,
+                            avatar:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                owner:{
+                    $first:"$owner"
+                }
+            }
+        }
+    ])
+
+    if(!tweets){
+        throw new ApiError(400,"No tweets Are Founded")
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200,tweets,"All Tweets Are fethed successfully")
+    )
+})
+
 
 
 export {
     createTweet,
     getUserTweets,
     updateTweet,
-    deleteTweet
+    deleteTweet,
+    getAlltweets
 }

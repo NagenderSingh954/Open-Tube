@@ -5,9 +5,12 @@ import { getSubscribedChannels, getUserChannelSubscribers, toggleSubscription } 
 const router=Router()
 router.use(varifyJWt)
 
-router.route('/c/:channelId').post(toggleSubscription).get(getSubscribedChannels)
+router.route('/c/:channelId').post(toggleSubscription)
 
-router.route('/u/subscriberId').get(getUserChannelSubscribers)
+router.route('/u/:subscriberId').get(getSubscribedChannels) //it return teh chennal to which user has subscribed
+
+router.route('/c/:channelId').get(getUserChannelSubscribers)   
+// controller to return subscriber list of a channel
 
 
 export default router

@@ -6,6 +6,7 @@ import {
     getAllVideos,
     getVideoById,
     publishAVideo,
+    updateVideoDetail,
     updateVideoThumbnail
 } from "../controllers/video.controller.js";
 
@@ -35,7 +36,11 @@ router
 router
     .route("/:videoId")
     .get(getVideoById)
-    .patch(upload.single("thubmnail"), updateVideoThumbnail)  //Todo: Updating the video detail pending 
+    .patch(updateVideoDetail)  //Todo: Updating the video detail pending 
     .delete(deleteVideo)
 
+router
+    .route("/thubnail/:videoId")
+    .patch(upload.single("thumbnail"), updateVideoThumbnail)
+    
 export default router
