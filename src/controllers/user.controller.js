@@ -119,7 +119,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Password is incorrect")
   }
   const { accessToken, refreshToken } = await generateAccessAndrefreshToken(user._id)
-  console.log(accessToken, refreshToken)
+ 
 
   const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
@@ -156,7 +156,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   )
   const options = {      //be default cookies can be modiefied by the anyone but through this option we can tell who can modify
     httpOnly: true,      //Only server can modify these cookies through these options 
-    secure: true
+    secure: false
   }
 
   return res.status(200)
