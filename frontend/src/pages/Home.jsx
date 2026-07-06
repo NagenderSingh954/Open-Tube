@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar.jsx';
+import Navbar from '../components/Navbar.jsx';
 import Chips from '../components/Chips';
 import ShortList from '../components/ShortList';
-import VideoCard from '../components/VideoCard';
+import VideoCard from '../components/Videocard';
 import API from '../api';
 import { Auth } from '../auth';
 import '../styles/Home.css';
