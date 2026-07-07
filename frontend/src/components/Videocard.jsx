@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/VideoCard.css';
+import '../styles/Videocard.css';
 
 function VideoCard({ video, onVideoClick }) {
   const handleClick = () => {
